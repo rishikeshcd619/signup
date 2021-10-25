@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:signup/entity/user.dart';
 
 part 'authentication_event.dart';
 part 'authentication_state.dart';
@@ -17,8 +18,14 @@ class AuthenticationBloc
     if (event is AppStarted) {
       yield AuthenticationLoading();
       Future.delayed(Duration(seconds: 5));
-      if (true) yield AuthenticationSuccess(userName: "rishi");
-      yield AuthenticationFailure(errorMessage: "Authentication failed");
+      yield AuthenticationBegin();
+      if (event is Login)
+        yield AuthenticationSuccess(
+            user: new User(
+                name: event.userName,
+                password: event.userPassword,
+                email: event.userEmail,
+                mobileNumber: event.mobileNumber));
     }
   }
 }

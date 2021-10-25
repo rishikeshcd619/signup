@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:signup/bloc/authentication_bloc.dart';
+import 'package:signup/display_screen.dart';
 
 class FormScreen extends StatefulWidget {
   @override
@@ -8,25 +10,28 @@ class FormScreen extends StatefulWidget {
 }
 
 class FormScreenState extends State<FormScreen> {
-  String _name;
-  String _email;
-  String _password;
-  String _phoneNumber;
+  late String name;
+  late String email;
+  late String password;
+  late String mobileNumber;
+
+  //FormScreenState({required this.name, required this.password, required this.email, required this.mobileNumber})
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final authenticationBloc = AuthenticationBloc();
 
   Widget _buildName() {
     return TextFormField(
       decoration: InputDecoration(labelText: 'Name'),
-      validator: (String value) {
-        if (value.isEmpty) {
+      validator: (String? value) {
+        if (value!.isEmpty) {
           return 'Name is Required';
         }
 
         return null;
       },
-      onSaved: (String value) {
-        _name = value;
+      onSaved: (String? value) {
+        name = value!;
       },
     );
   }
@@ -34,8 +39,8 @@ class FormScreenState extends State<FormScreen> {
   Widget _buildEmail() {
     return TextFormField(
       decoration: InputDecoration(labelText: 'Email'),
-      validator: (String value) {
-        if (value.isEmpty) {
+      validator: (String? value) {
+        if (value!.isEmpty) {
           return 'Email is Required';
         }
 
@@ -47,8 +52,8 @@ class FormScreenState extends State<FormScreen> {
 
         return null;
       },
-      onSaved: (String value) {
-        _email = value;
+      onSaved: (String? value) {
+        email = value!;
       },
     );
   }
@@ -57,15 +62,16 @@ class FormScreenState extends State<FormScreen> {
     return TextFormField(
       decoration: InputDecoration(labelText: 'Password'),
       keyboardType: TextInputType.visiblePassword,
-      validator: (String value) {
-        if (value.isEmpty) {
+      validator: (String? value) {
+        if (value!.isEmpty) {
           return 'Password is Required';
         }
 
         return null;
       },
-      onSaved: (String value) {
-        _password = value;
+      obscureText: true,
+      onSaved: (String? value) {
+        password = value!;
       },
     );
   }
@@ -74,15 +80,15 @@ class FormScreenState extends State<FormScreen> {
     return TextFormField(
       decoration: InputDecoration(labelText: 'Phone number'),
       keyboardType: TextInputType.phone,
-      validator: (String value) {
-        if (value.isEmpty) {
+      validator: (String? value) {
+        if (value!.isEmpty) {
           return 'Phone number is Required';
         }
 
         return null;
       },
-      onSaved: (String value) {
-        _phoneNumber = value;
+      onSaved: (String? value) {
+        mobileNumber = value!;
       },
     );
   }
@@ -106,20 +112,27 @@ class FormScreenState extends State<FormScreen> {
                 SizedBox(height: 100),
                 RaisedButton(
                   child: Text(
-                    'Submit',
+                    'SignUp',
                     style: TextStyle(color: Colors.teal, fontSize: 16),
                   ),
                   onPressed: () {
-                    if (!_formKey.currentState.validate()) {
+                    if (!_formKey.currentState!.validate()) {
                       return;
                     }
-
-                    _formKey.currentState.save();
-
-                    //print(_name);
-                    //print(_email);
-                    //print(_phoneNumber);
-                    //print(_password);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return DisplayUser(
+                            userName: name,
+                            userPassword: password,
+                            userEmail: email,
+                            userMobileNumber: double.parse(mobileNumber),
+                          );
+                        },
+                      ),
+                    );
+                    //userDisplay(name, email, password, mobileNumber);
                   },
                 )
               ],
@@ -129,4 +142,18 @@ class FormScreenState extends State<FormScreen> {
       ),
     );
   }
+
+//   void userDisplay(String userName, String userEmail, String userPassword,
+//       String mobileNumber) {
+//     // //final authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
+//     // authenticationBloc
+//     //   ..add(Login(
+//     //     userName: name,
+//     //     userPassword: password,
+//     //     userEmail: email,
+//     //     mobileNumber: double.parse(mobileNumber),
+//     //   ));
+
+//   }
+// }
 }

@@ -5,14 +5,12 @@ abstract class AuthenticationState {}
 
 class AuthenticationInitial extends AuthenticationState {}
 
-class AuthenticationSuccess extends AuthenticationState {
-  String userName = " ";
-  AuthenticationSuccess({this.userName});
-}
+class AuthenticationBegin extends AuthenticationState {}
 
-class AuthenticationFailure extends AuthenticationState {
-  String errorMessage = " ";
-  AuthenticationFailure({this.errorMessage});
+class AuthenticationSuccess extends AuthenticationState {
+  User user;
+
+  AuthenticationSuccess({required this.user});
 }
 
 class AuthenticationLoading extends AuthenticationState {}
