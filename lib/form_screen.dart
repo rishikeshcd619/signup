@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:signup/bloc/authentication_bloc.dart';
 import 'package:signup/display_screen.dart';
@@ -10,10 +11,12 @@ class FormScreen extends StatefulWidget {
 }
 
 class FormScreenState extends State<FormScreen> {
-  late String name;
-  late String email;
-  late String password;
-  late String mobileNumber;
+  String? _name;
+  String? _email;
+  String? _password;
+  String? _mobileNumber;
+
+  final auth = FirebaseAuth.instance;
 
   //FormScreenState({required this.name, required this.password, required this.email, required this.mobileNumber})
 
@@ -30,8 +33,10 @@ class FormScreenState extends State<FormScreen> {
 
         return null;
       },
-      onSaved: (String? value) {
-        name = value!;
+      onChanged: (value) {
+        setState(() {
+          _name = value.trim();
+        });
       },
     );
   }
@@ -52,8 +57,10 @@ class FormScreenState extends State<FormScreen> {
 
         return null;
       },
-      onSaved: (String? value) {
-        email = value!;
+      onChanged: (value) {
+        setState(() {
+          _email = value.trim();
+        });
       },
     );
   }
@@ -70,8 +77,31 @@ class FormScreenState extends State<FormScreen> {
         return null;
       },
       obscureText: true,
-      onSaved: (String? value) {
-        password = value!;
+      obscuringCharacter: '*',
+      onChanged: (value) {
+        setState(() {
+          _password = value.trim();
+        });
+      },
+    );
+  }
+
+  Widget _buildConfirmPassword() {
+    return TextFormField(
+      decoration: const InputDecoration(labelText: 'Confirm password'),
+      obscureText: true,
+      obscuringCharacter: '*',
+      keyboardType: TextInputType.text,
+      validator: (String? value) {
+        if (value!.isEmpty) {
+          return 'Password is Required';
+        }
+
+        if (_password != value) {
+          return "Password does not match";
+        }
+
+        return null;
       },
     );
   }
@@ -87,8 +117,10 @@ class FormScreenState extends State<FormScreen> {
 
         return null;
       },
-      onSaved: (String? value) {
-        mobileNumber = value!;
+      onChanged: (value) {
+        setState(() {
+          _password = value.trim();
+        });
       },
     );
   }
@@ -106,11 +138,13 @@ class FormScreenState extends State<FormScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 _buildName(),
-                _buildPassword(),
                 _buildEmail(),
+                _buildPassword(),
+                _buildConfirmPassword(),
                 _buildPhoneNumber(),
                 SizedBox(height: 100),
                 RaisedButton(
+                  shape: StadiumBorder(),
                   child: Text(
                     'SignUp',
                     style: TextStyle(color: Colors.teal, fontSize: 16),
@@ -119,19 +153,32 @@ class FormScreenState extends State<FormScreen> {
                     if (!_formKey.currentState!.validate()) {
                       return;
                     }
-                    Navigator.push(
-                      context,
+                    auth.createUserWithEmailAndPassword(
+                        email: _email!, password: _password!);
+
+                    Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
-                        builder: (context) {
-                          return DisplayUser(
-                            userName: name,
-                            userPassword: password,
-                            userEmail: email,
-                            userMobileNumber: double.parse(mobileNumber),
-                          );
-                        },
+                        builder: (context) => DisplayUser(
+                          userName: _name!,
+                          userEmail: _email!,
+                          userMobileNumber: double.parse(_mobileNumber!),
+                        ),
                       ),
                     );
+
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) {
+                    //       return DisplayUser(
+                    //         userName: _name!,
+                    //         userPassword: _password!,
+                    //         userEmail: _email!,
+                    //         userMobileNumber: double.parse(_mobileNumber!),
+                    //       );
+                    //     },
+                    //   ),
+                    // );
                     //userDisplay(name, email, password, mobileNumber);
                   },
                 )

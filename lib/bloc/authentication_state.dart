@@ -14,3 +14,9 @@ class AuthenticationSuccess extends AuthenticationState {
 }
 
 class AuthenticationLoading extends AuthenticationState {}
+
+class AuthenticationFailure extends AuthenticationState {
+  String errorMessage;
+
+  AuthenticationFailure({required this.errorMessage});
+}
